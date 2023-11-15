@@ -1,13 +1,14 @@
 from bs4 import BeautifulSoup
 import requests
 import re
+import json
 
 # URL halaman yang akan di scrape
 url = 'https://www.pikiran-rakyat.com/'
 
 # Set up user agent
 headers = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'}
+    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_2) AppleWebKit/601.3.9 (KHTML, like Gecko) Version/9.0.2 Safari/601.3.9'}
 
 # Fetch konten HTML
 response = requests.get(url, headers=headers)
@@ -18,6 +19,7 @@ soup = BeautifulSoup(html_content, 'html.parser')
 section = soup.find('section', class_='most mt2 clearfix')
 
 # Inisialisasi list untuk menyimpan judul dan url artikel
+articles = {}
 titles =[]
 urls = []
 
@@ -46,42 +48,42 @@ def scrape_article_content(article_url):
         else:
             paginated_url = article_url
 
-        # Mengambil konten HTML artikel
-        response = requests.get(paginated_url, headers=headers)
-        html_content = response.text
-        soup = BeautifulSoup(html_content, 'html.parser')
+        try:
+            # Mengambil konten HTML artikel
+            response = requests.get(paginated_url, headers=headers, timeout=10)
+            html_content = response.text
+            soup = BeautifulSoup(html_content, 'html.parser')
 
-        # Mencari elemen konten artikel
-        article_body = soup.find('article', class_='read__content clearfix')
+            # Mencari elemen konten artikel
+            article_body = soup.find('article', class_='read__content clearfix')
 
-        if article_body:
-            for p in article_body.find_all('p'):
-                # Menskip paragraf yang berisi link ke artikel lain
-                if 'Baca Juga:' not in p.text and not p.find('a'):
-                    article_content += p.text + "\n\n"
+            if article_body:
+                for p in article_body.find_all('p'):
+                    # Menskip paragraf yang berisi link ke artikel lain
+                    if 'Baca Juga:' not in p.text and not p.find('a'):
+                        article_content += p.text + "\n\n"
 
-        # Mencari link 'Next' untuk halaman berikutnya
-        next_page_link = soup.find('a', class_='paging__link', rel='next')
+            # Mencari link 'Next' untuk halaman berikutnya
+            next_page_link = soup.find('a', class_='paging__link', rel='next')
 
-        if next_page_link:
-            page_number += 1
-        else:
+            if next_page_link:
+                page_number += 1
+            else:
+                break
+        except requests.exceptions.RequestException as e:
+            print(f"Error fetching response. Error: {e}")
             break
 
     return article_content.strip()
 
-def sanitize_filename(filename):
-    # Membersihkan karakter ilegal untuk nama file
-    return re.sub(r'[\\/*?:"<>|]', '', filename)
+# Export ke articles.json dengan struktur {title:{konten:link}}
 
-total_fetched = 0
+for i in range(len(titles)):
+    articles[titles[i]] = {
+        "content": scrape_article_content(urls[i]),
+        "link": urls[i]
+    }
 
-# Looping untuk menyimpan konten setiap artikel ke file .txt
-for i in range(len(urls)):
-    article_text = scrape_article_content(urls[i])
-    safe_title = sanitize_filename(titles[i])
-    file_path = f'articles/{safe_title}.txt'
-    
-    with open(file_path, 'w', encoding='utf-8') as f:
-        f.write(article_text)
-        print("\nTotal articles fetched: " + str(total_fetched + 1 + i))   
+with open('articles.json', 'w') as outfile:
+    json.dump(articles, outfile, indent=4)
+    print("Done writing to articles.json")
