@@ -84,4 +84,4 @@ for i in range(len(urls)):
     
     with open(file_path, 'w', encoding='utf-8') as f:
         f.write(article_text)
-        print("Total articles fetched: " + str(total_fetched + 1 + i) + "\n")   
+        print("\nTotal articles fetched: " + str(total_fetched + 1 + i))   
