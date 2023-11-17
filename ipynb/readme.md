@@ -1,5 +1,3 @@
-# QTI Assessment - Data Engineer Position
-
 ## Overview
 This repository contains the assessment for the Data Engineer position at PT. Quantus Telematika Indonesia. The project involves building a database schema for a specific form, generating dummy data, and running queries to analyze the data.
 
@@ -10,6 +8,8 @@ This repository contains the assessment for the Data Engineer position at PT. Qu
 
 ## Database Schema
 The database schema is designed to track assets, employees, companies, supervisors, asset loss reports, and loss events. The schema is visualized below:
+
+
 (![Schema](https://i.imgur.com/hukgzgp.png)).
 
 ## Features
