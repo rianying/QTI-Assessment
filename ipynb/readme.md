@@ -7,9 +7,6 @@ This repository contains the assessment for the Data Engineer position at PT. Qu
 - `tugas.pdf`: PDF file containing the form and the tasks
 
 ## Database Schema
-The database schema is designed to track assets, employees, companies, supervisors, asset loss reports, and loss events. The schema is visualized below:
-
-
 (![Schema](https://i.imgur.com/hukgzgp.png)).
 
 ## Features
