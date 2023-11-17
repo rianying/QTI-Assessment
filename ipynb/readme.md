@@ -7,7 +7,7 @@ This repository contains the assessment for the Data Engineer position at PT. Qu
 - `tugas.pdf`: PDF file containing the form and the tasks
 
 ## Database Schema
-(![Schema](https://i.imgur.com/hukgzgp.png)).
+![Schema](https://i.imgur.com/hukgzgp.png).
 
 ## Features
 - Data generation for companies, employees, supervisors, assets, asset loss reports, and loss events.
